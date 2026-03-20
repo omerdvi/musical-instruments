@@ -100,6 +100,8 @@ const App = {
     }
 
     this.showScreen("category");
+    // Play category name
+    setTimeout(() => AudioManager.playCategoryName(categoryId), 300);
   },
 
   // ===== Instrument Screen =====
@@ -141,6 +143,8 @@ const App = {
     };
 
     this.showScreen("instrument");
+    // Auto-play instrument name
+    setTimeout(() => AudioManager.playName(instrumentId), 300);
   },
 
   // Get all instruments in order (grouped by category)

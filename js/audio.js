@@ -47,7 +47,7 @@ const AudioManager = {
   playName(instrumentId, onEnd) {
     const inst = getInstrument(instrumentId);
     if (inst) {
-      const src = `voice/names/${inst.nameHe}.m4a`;
+      const src = `voice/names/${encodeURIComponent(inst.nameHe)}.m4a`;
       this.play(src, onEnd);
     }
   },
@@ -56,7 +56,7 @@ const AudioManager = {
   playCategoryName(categoryId, onEnd) {
     const cat = getCategory(categoryId);
     if (cat) {
-      const src = `voice/categories/${cat.nameHe}.m4a`;
+      const src = `voice/categories/${encodeURIComponent(cat.nameHe)}.m4a`;
       this.play(src, onEnd);
     }
   },
