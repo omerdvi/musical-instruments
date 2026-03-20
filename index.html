@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>כלי נגינה</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ===== Home Screen ===== -->
+  <div id="screen-home" class="screen active">
+    <h1 class="app-title">🎵 <span>כלי נגינה</span> 🎵</h1>
+    <div id="home-categories"></div>
+    <button class="btn-quiz-home" onclick="App.openQuizMenu()">
+      <span class="quiz-icon">🎮</span>
+      <span>בוא נשחק!</span>
+    </button>
+  </div>
+
+  <!-- ===== Category Screen ===== -->
+  <div id="screen-category" class="screen">
+    <div class="top-bar">
+      <button class="btn-back" onclick="App.goBack()">→</button>
+      <h2 id="category-title" class="screen-title"></h2>
+      <button class="btn-home" onclick="App.goHome()">🏠</button>
+    </div>
+    <div id="category-instruments"></div>
+  </div>
+
+  <!-- ===== Instrument Screen ===== -->
+  <div id="screen-instrument" class="screen">
+    <div class="top-bar">
+      <button class="btn-back" onclick="App.goBack()">→</button>
+      <h2 id="instrument-title" class="screen-title"></h2>
+      <button class="btn-home" onclick="App.goHome()">🏠</button>
+    </div>
+    <div class="instrument-images">
+      <div class="img-container">
+        <img id="instrument-img-a" src="" alt="">
+      </div>
+      <div class="img-container">
+        <img id="instrument-img-b" src="" alt="">
+      </div>
+    </div>
+    <div class="instrument-actions">
+      <button id="btn-next-instrument" class="btn-nav-instrument" onclick="App.nextInstrument()">‹</button>
+      <button id="btn-play-music" class="btn-action" title="נגן מוזיקה">🎵</button>
+      <button id="btn-play-name" class="btn-action" title="השמע שם">🔊</button>
+      <button id="btn-prev-instrument" class="btn-nav-instrument" onclick="App.prevInstrument()">›</button>
+    </div>
+  </div>
+
+  <!-- ===== Quiz Menu ===== -->
+  <div id="screen-quiz-menu" class="screen">
+    <div class="top-bar" style="position: absolute; top: 0; right: 0; left: 0;">
+      <button class="btn-back" onclick="App.goBack()" style="--cat-color: #10B981">→</button>
+    </div>
+    <h2 class="quiz-menu-title">🎮 בחר רמה</h2>
+    <div class="difficulty-buttons">
+      <button class="btn-difficulty" onclick="App.startQuiz('easy')">
+        ⭐ קל
+      </button>
+      <button class="btn-difficulty hard" onclick="App.startQuiz('hard')">
+        ⭐⭐⭐ מתקדם
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== Quiz Screen ===== -->
+  <div id="screen-quiz" class="screen">
+    <div class="top-bar">
+      <button class="btn-home" onclick="App.goHome()" style="--cat-color: #10B981">🏠</button>
+      <h2 id="quiz-prompt" class="screen-title" style="--cat-color: #065F46"></h2>
+    </div>
+    <div id="quiz-options"></div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/quiz.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
