@@ -1,7 +1,7 @@
 {
-  "name": "כלי נגינה",
-  "short_name": "כלי נגינה",
-  "description": "אפליקציה ללימוד כלי נגינה לפעוטות",
+  "name": "מגלים את הכלים",
+  "short_name": "מגלים את הכלים",
+  "description": "אפליקציה ללימוד כלי נגינה לקטנטנים",
   "start_url": "./index.html",
   "display": "standalone",
   "orientation": "any",

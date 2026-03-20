@@ -6,13 +6,13 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="theme-color" content="#F59E0B">
-  <title>כלי נגינה - לימוד כלי נגינה לילדים</title>
+  <title>מגלים את הכלים - כלי נגינה לקטנטנים</title>
   <meta name="description" content="אפליקציה אינטראקטיבית ללימוד כלי נגינה לפעוטות - 44 כלי נגינה עם תמונות, צלילים ומשחק חידון">
 
   <!-- Open Graph / WhatsApp Preview -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="🎵 כלי נגינה - לימוד כלי נגינה לילדים">
-  <meta property="og:description" content="אפליקציה אינטראקטיבית ללימוד 44 כלי נגינה לפעוטות - תמונות, צלילים ומשחק חידון!">
+  <meta property="og:title" content="🎵 מגלים את הכלים - כלי נגינה לקטנטנים">
+  <meta property="og:description" content="44 כלי נגינה עם תמונות, צלילים ומשחק חידון - בואו לגלות!">
   <meta property="og:image" content="https://omerdvi.github.io/musical-instruments/images/og-image.jpg">
   <meta property="og:url" content="https://omerdvi.github.io/musical-instruments/">
   <meta property="og:locale" content="he_IL">
@@ -31,12 +31,13 @@
 
   <!-- ===== Home Screen ===== -->
   <div id="screen-home" class="screen active">
-    <h1 class="app-title">🎵 <span>כלי נגינה</span> 🎵</h1>
+    <h1 class="app-title">🎵 <span>מגלים את הכלים</span> 🎵</h1>
     <div id="home-categories"></div>
     <button class="btn-quiz-home" onclick="App.openQuizMenu()">
       <span class="quiz-icon">🎮</span>
       <span>בוא נשחק!</span>
     </button>
+    <button class="btn-about" onclick="App.openAbout()">אודות</button>
   </div>
 
   <!-- ===== Category Screen ===== -->
@@ -77,13 +78,16 @@
     <div class="top-bar" style="position: absolute; top: 0; right: 0; left: 0;">
       <button class="btn-back" onclick="App.goBack()" style="--cat-color: #10B981">→</button>
     </div>
-    <h2 class="quiz-menu-title">🎮 בחר רמה</h2>
+    <h2 class="quiz-menu-title">🎮 בחר משחק</h2>
     <div class="difficulty-buttons">
       <button class="btn-difficulty" onclick="App.startQuiz('easy')">
-        ⭐ קל
+        🔍 איפה הכלי? (קל)
       </button>
       <button class="btn-difficulty hard" onclick="App.startQuiz('hard')">
-        ⭐⭐⭐ מתקדם
+        🔍 איפה הכלי? (מתקדם)
+      </button>
+      <button class="btn-difficulty odd" onclick="App.startOddOneOut()">
+        🤔 מה לא שייך?
       </button>
     </div>
   </div>
@@ -95,6 +99,59 @@
       <h2 id="quiz-prompt" class="screen-title" style="--cat-color: #065F46"></h2>
     </div>
     <div id="quiz-options"></div>
+  </div>
+
+  <!-- ===== Odd One Out Quiz Screen ===== -->
+  <div id="screen-odd-quiz" class="screen">
+    <div class="top-bar">
+      <button class="btn-home" onclick="App.goHome()" style="--cat-color: #10B981">🏠</button>
+      <h2 id="odd-quiz-prompt" class="screen-title" style="--cat-color: #065F46"></h2>
+    </div>
+    <div class="odd-category-header">
+      <img id="odd-category-img" src="" alt="">
+      <span id="odd-category-name"></span>
+    </div>
+    <div id="odd-quiz-options"></div>
+  </div>
+
+  <!-- ===== About Screen ===== -->
+  <div id="screen-about" class="screen">
+    <div class="top-bar">
+      <button class="btn-back" onclick="App.goBack()" style="--cat-color: #F59E0B">→</button>
+      <h2 class="screen-title" style="--cat-color: #F59E0B">אודות</h2>
+      <button class="btn-home" onclick="App.goHome()" style="--cat-color: #F59E0B">🏠</button>
+    </div>
+    <div class="about-content">
+      <h2>🎵 מגלים את הכלים</h2>
+      <p class="about-subtitle">אפליקציה ללימוד כלי נגינה לקטנטנים</p>
+
+      <div class="about-section">
+        <p>נבנתה באהבה עבור <strong>רון</strong> 💙</p>
+      </div>
+
+      <div class="about-section">
+        <p>44 כלי נגינה מ-4 קטגוריות:</p>
+        <p>כלי מיתר, כלי נשיפה, כלי הקשה וכלי מקלדת.</p>
+        <p>כל כלי מגיע עם תמונה, הדגמה של נגן בפעולה, קטע נגינה והקראה בעברית.</p>
+      </div>
+
+      <div class="about-section about-credits">
+        <p><strong>כלים שנעשה בהם שימוש:</strong></p>
+        <p>🎨 תמונות: Gemini</p>
+        <p>🎵 קטעי נגינה: Suno AI</p>
+        <p>💻 קוד ופיתוח: Claude + Cursor</p>
+      </div>
+
+      <div class="about-section">
+        <p>פותח על ידי <strong>עמר דביר</strong></p>
+        <p class="about-email">omerdvir@gmail.com</p>
+        <p class="about-year">© 2026</p>
+      </div>
+
+      <a class="about-link" href="https://github.com/omerdvi/musical-instruments" target="_blank" rel="noopener">
+        קוד פתוח ב-GitHub ↗
+      </a>
+    </div>
   </div>
 
   <script src="js/data.js"></script>

@@ -168,7 +168,6 @@ const App = {
     const all = this.getAllInstrumentsOrdered();
     const idx = all.indexOf(this.currentInstrumentId);
     const nextIdx = (idx + 1) % all.length;
-    this.currentInstrumentId = all[nextIdx];
     this.openInstrument(all[nextIdx]);
   },
 
@@ -176,7 +175,6 @@ const App = {
     const all = this.getAllInstrumentsOrdered();
     const idx = all.indexOf(this.currentInstrumentId);
     const prevIdx = (idx - 1 + all.length) % all.length;
-    this.currentInstrumentId = all[prevIdx];
     this.openInstrument(all[prevIdx]);
   },
 
@@ -211,6 +209,7 @@ const App = {
     for (const opt of question.options) {
       const btn = document.createElement("button");
       btn.className = "quiz-option";
+      // Only show image - no instrument name text
       btn.innerHTML = `
         <img src="${opt.image}" alt="" loading="lazy">
       `;
@@ -246,6 +245,59 @@ const App = {
       document.body.appendChild(particle);
       setTimeout(() => particle.remove(), 1000);
     }
+  },
+
+  // ===== Odd One Out Quiz =====
+  startOddOneOut() {
+    this.history.push({ screen: "quiz-menu", render: () => {} });
+    this.nextOddQuestion();
+  },
+
+  nextOddQuestion() {
+    const question = Quiz.generateOddOneOut();
+    this.renderOddQuestion(question);
+    this.showScreen("odd-quiz", false);
+    // Play category name
+    setTimeout(() => AudioManager.playCategoryName(question.categoryId), 400);
+  },
+
+  renderOddQuestion(question) {
+    document.getElementById("odd-quiz-prompt").textContent = "מה לא שייך?";
+    document.getElementById("odd-category-img").src = question.categoryImage;
+    document.getElementById("odd-category-name").textContent = question.categoryName;
+    document.getElementById("odd-category-name").style.color = question.categoryColor;
+
+    const grid = document.getElementById("odd-quiz-options");
+    grid.innerHTML = "";
+
+    for (const opt of question.options) {
+      const btn = document.createElement("button");
+      btn.className = "quiz-option";
+      btn.innerHTML = `
+        <img src="${opt.image}" alt="" loading="lazy">
+      `;
+
+      btn.addEventListener("click", () => {
+        if (btn.classList.contains("correct") || btn.classList.contains("wrong")) return;
+
+        if (opt.id === question.oddId) {
+          btn.classList.add("correct");
+          this.celebrateCorrect(btn);
+          setTimeout(() => this.nextOddQuestion(), 1500);
+        } else {
+          btn.classList.add("wrong");
+          setTimeout(() => btn.classList.remove("wrong"), 500);
+        }
+      });
+
+      grid.appendChild(btn);
+    }
+  },
+
+  // ===== About =====
+  openAbout() {
+    this.history.push({ screen: "home", render: () => {} });
+    this.showScreen("about");
   },
 
   // Navigation
