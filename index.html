@@ -5,7 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <title>כלי נגינה</title>
+  <meta name="theme-color" content="#F59E0B">
+  <title>כלי נגינה - לימוד כלי נגינה לילדים</title>
+  <meta name="description" content="אפליקציה אינטראקטיבית ללימוד כלי נגינה לפעוטות - 44 כלי נגינה עם תמונות, צלילים ומשחק חידון">
+
+  <!-- Open Graph / WhatsApp Preview -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="🎵 כלי נגינה - לימוד כלי נגינה לילדים">
+  <meta property="og:description" content="אפליקציה אינטראקטיבית ללימוד 44 כלי נגינה לפעוטות - תמונות, צלילים ומשחק חידון!">
+  <meta property="og:image" content="https://omerdvi.github.io/musical-instruments/images/og-image.jpg">
+  <meta property="og:url" content="https://omerdvi.github.io/musical-instruments/">
+  <meta property="og:locale" content="he_IL">
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="images/icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="images/icon-192.png">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -85,5 +101,10 @@
   <script src="js/audio.js"></script>
   <script src="js/quiz.js"></script>
   <script src="js/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
 </body>
 </html>
