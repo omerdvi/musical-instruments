@@ -143,8 +143,16 @@ const App = {
     };
 
     this.showScreen("instrument");
-    // Auto-play instrument name
-    setTimeout(() => AudioManager.playName(instrumentId), 300);
+    // Auto-play: name first, then music
+    setTimeout(() => {
+      AudioManager.playName(instrumentId, () => {
+        // After name finishes, play music
+        playBtn.classList.add("playing");
+        AudioManager.playMusic(instrumentId, () => {
+          playBtn.classList.remove("playing");
+        });
+      });
+    }, 300);
   },
 
   // Get all instruments in order (grouped by category)
