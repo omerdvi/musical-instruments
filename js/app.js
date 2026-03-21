@@ -2,6 +2,8 @@
 const App = {
   currentScreen: null,
   history: [],
+  quizScore: 0,
+  oddQuizScore: 0,
 
   init() {
     this.showScreen("home");
@@ -16,8 +18,20 @@ const App = {
         const prev = this.history.pop();
         this.showScreen(prev.screen, false);
         if (prev.render) prev.render();
+      } else {
+        // No more in-app history — go home
+        this.showScreen("home", false);
       }
     });
+
+    // Global image error fallback
+    document.addEventListener("error", (e) => {
+      if (e.target.tagName === "IMG" && !e.target.dataset.fallback) {
+        e.target.dataset.fallback = "1";
+        e.target.style.opacity = "0.3";
+        e.target.alt = "🎵";
+      }
+    }, true);
   },
 
   showScreen(screenId, pushHistory = true) {
@@ -31,7 +45,7 @@ const App = {
     }
 
     if (pushHistory && this.currentScreen && this.currentScreen !== screenId) {
-      window.history.pushState({}, "");
+      window.history.pushState({ screen: screenId }, "");
     }
 
     this.currentScreen = screenId;
@@ -121,6 +135,9 @@ const App = {
     document.getElementById("instrument-img-b").src = inst.imageB;
     document.getElementById("instrument-img-b").alt = inst.nameHe + " - נגן";
 
+    // Update nav button states
+    this.updateInstrumentNav();
+
     // Play music button
     const playBtn = document.getElementById("btn-play-music");
     playBtn.onclick = () => {
@@ -151,31 +168,89 @@ const App = {
     );
   },
 
-  // Get all instruments in order (grouped by category)
-  getAllInstrumentsOrdered() {
-    const all = [];
-    for (const cat of CATEGORIES) {
-      for (const id of cat.instrumentIds) {
-        all.push(id);
-      }
-    }
-    return all;
+  // Get instruments in current category only
+  getCategoryInstruments() {
+    const cat = getCategoryForInstrument(this.currentInstrumentId);
+    return cat ? cat.instrumentIds : [];
   },
 
   currentInstrumentId: null,
 
+  updateInstrumentNav() {
+    const ids = this.getCategoryInstruments();
+    const idx = ids.indexOf(this.currentInstrumentId);
+    const nextBtn = document.getElementById("btn-next-instrument");
+    const prevBtn = document.getElementById("btn-prev-instrument");
+
+    // Disable at category edges
+    if (nextBtn) {
+      const atEnd = (idx >= ids.length - 1);
+      nextBtn.disabled = atEnd;
+      nextBtn.style.opacity = atEnd ? "0.3" : "1";
+    }
+    if (prevBtn) {
+      const atStart = (idx <= 0);
+      prevBtn.disabled = atStart;
+      prevBtn.style.opacity = atStart ? "0.3" : "1";
+    }
+  },
+
   nextInstrument() {
-    const all = this.getAllInstrumentsOrdered();
-    const idx = all.indexOf(this.currentInstrumentId);
-    const nextIdx = (idx + 1) % all.length;
-    this.openInstrument(all[nextIdx]);
+    const ids = this.getCategoryInstruments();
+    const idx = ids.indexOf(this.currentInstrumentId);
+    if (idx < ids.length - 1) {
+      this.openInstrument(ids[idx + 1]);
+    }
   },
 
   prevInstrument() {
-    const all = this.getAllInstrumentsOrdered();
-    const idx = all.indexOf(this.currentInstrumentId);
-    const prevIdx = (idx - 1 + all.length) % all.length;
-    this.openInstrument(all[prevIdx]);
+    const ids = this.getCategoryInstruments();
+    const idx = ids.indexOf(this.currentInstrumentId);
+    if (idx > 0) {
+      this.openInstrument(ids[idx - 1]);
+    }
+  },
+
+  // ===== Sound Effects =====
+  playCorrectSound() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      gain.gain.value = 0.15;
+      osc.type = "sine";
+      // Happy ascending notes: C5 → E5 → G5
+      const now = ctx.currentTime;
+      osc.frequency.setValueAtTime(523, now);
+      osc.frequency.setValueAtTime(659, now + 0.12);
+      osc.frequency.setValueAtTime(784, now + 0.24);
+      gain.gain.setValueAtTime(0.15, now + 0.3);
+      gain.gain.linearRampToValueAtTime(0, now + 0.5);
+      osc.start(now);
+      osc.stop(now + 0.5);
+    } catch (e) { /* ignore on unsupported browsers */ }
+  },
+
+  playWrongSound() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      gain.gain.value = 0.1;
+      osc.type = "sine";
+      // Gentle low tone
+      const now = ctx.currentTime;
+      osc.frequency.setValueAtTime(280, now);
+      osc.frequency.linearRampToValueAtTime(220, now + 0.25);
+      gain.gain.setValueAtTime(0.1, now + 0.2);
+      gain.gain.linearRampToValueAtTime(0, now + 0.35);
+      osc.start(now);
+      osc.stop(now + 0.35);
+    } catch (e) { /* ignore on unsupported browsers */ }
   },
 
   // ===== Quiz =====
@@ -187,8 +262,20 @@ const App = {
   startQuiz(difficulty) {
     Quiz.difficulty = difficulty;
     Quiz.recentCorrect = [];
+    this.quizScore = 0;
+    this.updateQuizScore();
     this.history.push({ screen: "quiz-menu", render: () => {} });
     this.nextQuestion();
+  },
+
+  updateQuizScore() {
+    const el = document.getElementById("quiz-score");
+    if (el) el.textContent = `⭐ ${this.quizScore}`;
+  },
+
+  updateOddQuizScore() {
+    const el = document.getElementById("odd-quiz-score");
+    if (el) el.textContent = `⭐ ${this.oddQuizScore}`;
   },
 
   nextQuestion() {
@@ -205,25 +292,38 @@ const App = {
 
     const grid = document.getElementById("quiz-options");
     grid.innerHTML = "";
+    let answered = false;
 
     for (const opt of question.options) {
       const btn = document.createElement("button");
       btn.className = "quiz-option";
-      // Only show image - no instrument name text
-      btn.innerHTML = `
-        <img src="${opt.image}" alt="" loading="lazy">
-      `;
+      btn.dataset.instrumentId = opt.id;
+      btn.innerHTML = `<img src="${opt.image}" alt="">`;
 
       btn.addEventListener("click", () => {
-        if (btn.classList.contains("correct") || btn.classList.contains("wrong")) return;
+        if (answered || btn.classList.contains("wrong")) return;
 
         if (opt.id === question.correctId) {
+          answered = true;
           btn.classList.add("correct");
+          this.quizScore++;
+          this.updateQuizScore();
+          this.playCorrectSound();
+          // Lock all buttons
+          grid.querySelectorAll(".quiz-option").forEach(b => b.style.pointerEvents = "none");
           this.celebrateCorrect(btn);
           setTimeout(() => this.nextQuestion(), 1500);
         } else {
           btn.classList.add("wrong");
-          setTimeout(() => btn.classList.remove("wrong"), 500);
+          this.playWrongSound();
+          // After shake, hint at correct answer
+          setTimeout(() => {
+            const correctBtn = grid.querySelector(`[data-instrument-id="${question.correctId}"]`);
+            if (correctBtn) correctBtn.classList.add("hint");
+            setTimeout(() => {
+              if (correctBtn) correctBtn.classList.remove("hint");
+            }, 1200);
+          }, 500);
         }
       });
 
@@ -232,16 +332,24 @@ const App = {
   },
 
   celebrateCorrect(btn) {
-    // Create confetti particles
     const rect = btn.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const colors = ["#F59E0B", "#3B82F6", "#EF4444", "#8B5CF6", "#10B981"];
+
     for (let i = 0; i < 12; i++) {
       const particle = document.createElement("div");
       particle.className = "confetti";
-      particle.style.left = (rect.left + rect.width / 2) + "px";
-      particle.style.top = (rect.top + rect.height / 2) + "px";
-      particle.style.setProperty("--angle", (Math.random() * 360) + "deg");
-      particle.style.setProperty("--distance", (50 + Math.random() * 100) + "px");
-      particle.style.backgroundColor = ["#F59E0B", "#3B82F6", "#EF4444", "#8B5CF6", "#10B981"][Math.floor(Math.random() * 5)];
+      const angle = Math.random() * Math.PI * 2;
+      const distance = 50 + Math.random() * 100;
+      const tx = Math.cos(angle) * distance;
+      const ty = Math.sin(angle) * distance - 60;
+
+      particle.style.left = cx + "px";
+      particle.style.top = cy + "px";
+      particle.style.setProperty("--tx", tx + "px");
+      particle.style.setProperty("--ty", ty + "px");
+      particle.style.backgroundColor = colors[Math.floor(Math.random() * 5)];
       document.body.appendChild(particle);
       setTimeout(() => particle.remove(), 1000);
     }
@@ -249,6 +357,8 @@ const App = {
 
   // ===== Odd One Out Quiz =====
   startOddOneOut() {
+    this.oddQuizScore = 0;
+    this.updateOddQuizScore();
     this.history.push({ screen: "quiz-menu", render: () => {} });
     this.nextOddQuestion();
   },
@@ -269,24 +379,36 @@ const App = {
 
     const grid = document.getElementById("odd-quiz-options");
     grid.innerHTML = "";
+    let answered = false;
 
     for (const opt of question.options) {
       const btn = document.createElement("button");
       btn.className = "quiz-option";
-      btn.innerHTML = `
-        <img src="${opt.image}" alt="" loading="lazy">
-      `;
+      btn.dataset.instrumentId = opt.id;
+      btn.innerHTML = `<img src="${opt.image}" alt="">`;
 
       btn.addEventListener("click", () => {
-        if (btn.classList.contains("correct") || btn.classList.contains("wrong")) return;
+        if (answered || btn.classList.contains("wrong")) return;
 
         if (opt.id === question.oddId) {
+          answered = true;
           btn.classList.add("correct");
+          this.oddQuizScore++;
+          this.updateOddQuizScore();
+          this.playCorrectSound();
+          grid.querySelectorAll(".quiz-option").forEach(b => b.style.pointerEvents = "none");
           this.celebrateCorrect(btn);
           setTimeout(() => this.nextOddQuestion(), 1500);
         } else {
           btn.classList.add("wrong");
-          setTimeout(() => btn.classList.remove("wrong"), 500);
+          this.playWrongSound();
+          setTimeout(() => {
+            const correctBtn = grid.querySelector(`[data-instrument-id="${question.oddId}"]`);
+            if (correctBtn) correctBtn.classList.add("hint");
+            setTimeout(() => {
+              if (correctBtn) correctBtn.classList.remove("hint");
+            }, 1200);
+          }, 500);
         }
       });
 

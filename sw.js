@@ -1,4 +1,4 @@
-const CACHE_NAME = 'instruments-v2';
+const CACHE_NAME = 'instruments-v3';
 
 // Install - cache core files
 self.addEventListener('install', event => {

@@ -14,8 +14,16 @@
   <meta property="og:title" content="🎵 מגלים את הכלים - כלי נגינה לקטנטנים">
   <meta property="og:description" content="44 כלי נגינה עם תמונות, צלילים ומשחק חידון - בואו לגלות!">
   <meta property="og:image" content="https://omerdvi.github.io/musical-instruments/images/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   <meta property="og:url" content="https://omerdvi.github.io/musical-instruments/">
   <meta property="og:locale" content="he_IL">
+
+  <!-- Twitter / WhatsApp fallback -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="🎵 מגלים את הכלים - כלי נגינה לקטנטנים">
+  <meta name="twitter:description" content="44 כלי נגינה עם תמונות, צלילים ומשחק חידון - בואו לגלות!">
+  <meta name="twitter:image" content="https://omerdvi.github.io/musical-instruments/images/og-image.jpg">
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
@@ -95,8 +103,9 @@
   <!-- ===== Quiz Screen ===== -->
   <div id="screen-quiz" class="screen">
     <div class="top-bar">
-      <button class="btn-home" onclick="App.goHome()" style="--cat-color: #10B981">🏠</button>
+      <button class="btn-back" onclick="App.goBack()" style="--cat-color: #10B981">→</button>
       <h2 id="quiz-prompt" class="screen-title" style="--cat-color: #065F46"></h2>
+      <span id="quiz-score" class="quiz-score">⭐ 0</span>
     </div>
     <div id="quiz-options"></div>
   </div>
@@ -104,8 +113,9 @@
   <!-- ===== Odd One Out Quiz Screen ===== -->
   <div id="screen-odd-quiz" class="screen">
     <div class="top-bar">
-      <button class="btn-home" onclick="App.goHome()" style="--cat-color: #10B981">🏠</button>
+      <button class="btn-back" onclick="App.goBack()" style="--cat-color: #10B981">→</button>
       <h2 id="odd-quiz-prompt" class="screen-title" style="--cat-color: #065F46"></h2>
+      <span id="odd-quiz-score" class="quiz-score">⭐ 0</span>
     </div>
     <div class="odd-category-header">
       <img id="odd-category-img" src="" alt="">
